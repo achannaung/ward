@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ward Finder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Optima font and general body styling */
+        body {
+            font-family: 'Optima', sans-serif;
+            /* Modern Animated Linear Gradient Background: Dark Blue to Light Blue */
+            background: linear-gradient(135deg, #2c3e50, #3498db); /* Darker blue to a professional blue */
+            background-size: 400% 400%; /* Make the gradient larger than the viewport */
+            animation: gradientAnimation 15s ease infinite; /* Apply animation */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top to allow scrolling */
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            padding: 2rem; /* Add some padding around the content */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        /* Keyframes for the gradient animation */
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Style for the main container to center content and add shadow */
+        .container {
+            background-color: #ffffff; /* Changed to white for a cleaner look */
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 0 8px 15px -5px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+            padding: 2.5rem; /* Increased padding */
+            width: 100%;
+            max-width: 960px; /* Max width for larger screens */
+            margin-top: 2rem; /* Margin from the top */
+        }
+        /* Table styling for readability */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        th, td {
+            border: 1px solid #e0e0e0; /* Lighter gray border for table cells */
+            padding: 0.85rem; /* Slightly more padding */
+            text-align: left;
+        }
+        th {
+            background-color: #e9ecef; /* Light grey background for headers */
+            font-weight: 600; /* Semi-bold font */
+            color: #343a40; /* Darker text color for headers */
+            cursor: pointer; /* Indicate that headers are clickable */
+            position: relative; /* For sort indicator */
+            padding-right: 2.5rem; /* Make space for sort indicator */
+            border-bottom: 2px solid #ced4da; /* Stronger bottom border for headers */
+        }
+        th.sort-asc::after {
+            content: ' ▲'; /* Up arrow for ascending */
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: #007bff; /* Blue accent for sort indicator */
+        }
+        th.sort-desc::after {
+            content: ' ▼'; /* Down arrow for descending */
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: #007bff; /* Blue accent for sort indicator */
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa; /* Very light alternate row background */
+        }
+        tr:hover {
+            background-color: #e2f0ff; /* Subtle hover effect for rows */
+            transition: background-color 0.2s ease;
+        }
+        /* Style for scrollable table container */
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #dee2e6; /* Border for the entire table container */
+        }
+        /* Message box styling */
+        .message-box {
+            background-color: #e7f3fe; /* Light blue info background */
+            border: 1px solid #b8daff; /* Blue border */
+            color: #004085; /* Dark blue text */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem; /* Adjusted margin */
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .message-box.bg-red-100 {
+            background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;
+        }
+        .message-box.bg-green-100 {
+            background-color: #d4edda; border-color: #c3e6cb; color: #155724;
+        }
+        .message-box.bg-yellow-100 {
+            background-color: #fff3cd; border-color: #ffeeba; color: #856404;
+        }
+        /* Loading spinner styling */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007bff; /* Primary blue for spinner */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Avatar added here -->
+        <div class="flex justify-center mb-8">
+            <img src="https://media.licdn.com/dms/image/v2/D4D03AQHKtFWghLdKmg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1695697038884?e=1756339200&v=beta&t=prrVWK3CexHJb0E1D7zNILt-I9c-lR4-_mDE-AHur0A" alt="User Avatar"
+                 class="rounded-full border-4 border-blue-400 shadow-xl" style="width: 120px; height: 120px; object-fit: cover;">
+        </div>
+
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Wards Finder</h1>
+
+        <div class="mb-5">
+            <label for="townshipInput" class="block text-gray-700 text-base font-semibold mb-2">
+            Township Name:
+            </label>
+            <input type="text" id="townshipInput" placeholder="e.g., Ahlone"
+                   class="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out text-base">
+        </div>
+
+        <div class="mb-8">
+            <label for="townInput" class="block text-gray-700 text-base font-semibold mb-2">
+               Town Name:
+            </label>
+            <input type="text" id="townInput" placeholder="e.g., Yangon"
+                   class="shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out text-base">
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+            <button id="searchButton"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out w-full sm:w-auto flex-grow text-lg shadow-md">
+                Search
+                <span id="loadingSpinner" class="spinner hidden"></span>
+            </button>
+            <button id="clearButton"
+                    class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out w-full sm:w-auto flex-grow text-lg shadow-md">
+                Clear
+            </button>
+        </div>
+
+        <div id="messageBox" class="message-box hidden"></div>
+
+        <div id="results" class="table-container">
+            <!-- Results table will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const townshipInput = document.getElementById('townshipInput');
+        const townInput = document.getElementById('townInput');
+        const searchButton = document.getElementById('searchButton');
+        const clearButton = document.getElementById('clearButton');
+        const resultsDiv = document.getElementById('results');
+        const messageBox = document.getElementById('messageBox');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // URL of the CSV dataset
+        const csvUrl = 'https://raw.githubusercontent.com/achannaung/Datasets/refs/heads/main/Ward.csv';
+        let allData = []; // To store the parsed CSV data
+        let currentFilteredData = []; // To store the currently displayed filtered data for sorting
+        let currentSortColumn = null; // Stores the key of the column currently being sorted
+        let sortDirection = 'asc'; // Stores the current sort direction ('asc' or 'desc')
+
+        /**
+         * Displays a message in the message box.
+         * @param {string} message - The message to display.
+         * @param {string} type - The type of message (e.g., 'info', 'error', 'success', 'warning').
+         */
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            // Reset all type-specific classes
+            messageBox.classList.remove('hidden', 'bg-red-100', 'border-red-400', 'text-red-700', 'bg-green-100', 'border-green-400', 'text-green-700', 'bg-yellow-100', 'border-yellow-400', 'text-yellow-700', 'bg-blue-100', 'border-blue-400', 'text-blue-700');
+
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+            } else if (type === 'warning') { // Using 'warning' for yellow messages
+                messageBox.classList.add('bg-yellow-100', 'border-yellow-400', 'text-yellow-700');
+            } else { // 'info' or default
+                messageBox.classList.add('bg-blue-100', 'border-blue-400', 'text-blue-700'); /* Changed default info color */
+            }
+            messageBox.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the message box.
+         */
+        function hideMessageBox() {
+            messageBox.classList.add('hidden');
+        }
+
+        /**
+         * Shows the loading spinner for search.
+         */
+        function showLoadingSpinner() {
+            loadingSpinner.classList.remove('hidden');
+            searchButton.disabled = true;
+            clearButton.disabled = true;
+        }
+
+        /**
+         * Hides the loading spinner for search.
+         */
+        function hideLoadingSpinner() {
+            loadingSpinner.classList.add('hidden');
+            searchButton.disabled = false;
+            clearButton.disabled = false;
+        }
+
+        /**
+         * Fetches and parses the CSV data.
+         * @returns {Promise<Array<Object>>} A promise that resolves with the parsed data.
+         */
+        async function fetchCsvData() {
+            showLoadingSpinner();
+            hideMessageBox();
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                return parseCsv(csvText);
+            } catch (error) {
+                console.error('Error fetching or parsing CSV:', error);
+                showMessage('Failed to load data. Please check your internet connection or try again later.', 'error');
+                return []; // Return empty array on error
+            } finally {
+                hideLoadingSpinner();
+            }
+        }
+
+        /**
+         * Parses CSV text into an array of JavaScript objects.
+         * Assumes the first row is the header.
+         * @param {string} csvText - The raw CSV string.
+         * @returns {Array<Object>} An array of objects, where each object represents a row.
+         */
+        function parseCsv(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) {
+                return [];
+            }
+
+            const headers = lines[0].split(',').map(header => header.trim()); // Trim headers
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                if (values.length === headers.length) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index].trim(); // Trim values
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        /**
+         * Sorts an array of objects based on a given column key and direction.
+         * @param {Array<Object>} data - The array of objects to sort.
+         * @param {string} columnKey - The key of the column to sort by.
+         * @param {string} direction - The sort direction ('asc' or 'desc').
+         * @returns {Array<Object>} The sorted array.
+         */
+        function sortData(data, columnKey, direction) {
+            return [...data].sort((a, b) => {
+                const valA = (a[columnKey] || '').toLowerCase();
+                const valB = (b[columnKey] || '').toLowerCase();
+
+                if (valA < valB) {
+                    return direction === 'asc' ? -1 : 1;
+                }
+                if (valA > valB) {
+                    return direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
+        /**
+         * Handles a column header click for sorting.
+         * @param {Event} event - The click event.
+         */
+        function handleHeaderClick(event) {
+            const clickedHeader = event.currentTarget;
+            const columnKey = clickedHeader.dataset.columnKey;
+
+            if (!columnKey) return; // Should not happen if data-column-key is set correctly
+
+            // If clicking the same column, toggle sort direction
+            if (currentSortColumn === columnKey) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // If clicking a new column, reset to ascending
+                currentSortColumn = columnKey;
+                sortDirection = 'asc';
+            }
+
+            // Re-sort and display the current filtered data
+            const sortedData = sortData(currentFilteredData, currentSortColumn, sortDirection);
+            displayDataInTable(sortedData); // Pass the sorted data
+        }
+
+        /**
+         * Displays the filtered data in an HTML table.
+         * @param {Array<Object>} dataToDisplay - The array of objects to display.
+         */
+        function displayDataInTable(dataToDisplay) {
+            resultsDiv.innerHTML = ''; // Clear previous results
+            currentFilteredData = dataToDisplay; // Store the data being displayed for sorting
+
+            if (dataToDisplay.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-gray-600 text-center mt-4">No data found for the specified criteria.</p>';
+                return;
+            }
+
+            // Create table element
+            const table = document.createElement('table');
+            table.classList.add('min-w-full', 'divide-y', 'divide-gray-200');
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            // Get all unique keys from the data to form headers
+            const allKeys = new Set();
+            dataToDisplay.forEach(item => {
+                Object.keys(item).forEach(key => allKeys.add(key));
+            });
+            const headers = Array.from(allKeys); // Convert Set to Array
+
+            headers.forEach(key => {
+                const th = document.createElement('th');
+                th.textContent = key;
+                th.classList.add('px-6', 'py-3', 'text-left', 'text-xs', 'font-medium', 'text-gray-500', 'uppercase', 'tracking-wider');
+                th.dataset.columnKey = key; // Store the column key for sorting
+                th.addEventListener('click', handleHeaderClick); // Add click listener
+
+                // Add sort indicator class if this is the currently sorted column
+                if (currentSortColumn === key) {
+                    th.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                }
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            tbody.classList.add('bg-white', 'divide-y', 'divide-gray-200');
+
+            dataToDisplay.forEach(rowData => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    // Display the value or an empty string if the key doesn't exist for that row
+                    td.textContent = rowData[header] || '';
+                    td.classList.add('px-6', 'py-4', 'whitespace-nowrap', 'text-sm', 'text-gray-900');
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            resultsDiv.appendChild(table);
+        }
+
+        /**
+         * Handles the search button click event.
+         * Filters data based on township and/or town input and displays it.
+         */
+        async function handleSearch() {
+            const townshipName = townshipInput.value.trim().toLowerCase();
+            const townName = townInput.value.trim().toLowerCase();
+
+            if (!townshipName && !townName) {
+                showMessage('Please enter a Township name or a Town name to search.', 'warning'); /* Changed to warning type */
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            hideMessageBox();
+            showLoadingSpinner();
+
+            if (allData.length === 0) {
+                allData = await fetchCsvData();
+                if (allData.length === 0) {
+                    hideLoadingSpinner();
+                    return;
+                }
+            }
+
+            let filteredData = allData.filter(row => {
+                const matchesTownship = townshipName ? (row['Township'] && row['Township'].toLowerCase().includes(townshipName)) : true;
+                const matchesTown = townName ? (row['Town'] && row['Town'].toLowerCase().includes(townName)) : true;
+
+                return matchesTownship && matchesTown;
+            });
+
+            if (currentSortColumn) {
+                filteredData = sortData(filteredData, currentSortColumn, sortDirection);
+            }
+
+            displayDataInTable(filteredData);
+            hideLoadingSpinner();
+        }
+
+        /**
+         * Clears the input, results, and messages, and resets sorting state.
+         */
+        function clearAll() {
+            townshipInput.value = '';
+            townInput.value = '';
+            resultsDiv.innerHTML = '';
+            hideMessageBox();
+            currentSortColumn = null;
+            sortDirection = 'asc';
+            showMessage('Enter a Township name or a Town name to search.', 'info');
+        }
+
+        // Event listener for the search button
+        searchButton.addEventListener('click', handleSearch);
+
+        // Event listener for the clear button
+        clearButton.addEventListener('click', clearAll);
+
+        // Optional: Allow pressing Enter key to search in either input field
+        townshipInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+        townInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Initial data load when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            allData = await fetchCsvData();
+            if (allData.length > 0) {
+                showMessage('Data loaded successfully. Enter a Township name or a Town name to search.', 'success');
+            }
+        });
+    </script>
+</body>
+</html>
