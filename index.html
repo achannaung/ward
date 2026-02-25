@@ -1,134 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ward Finder</title>
     
-    <!-- Google Fonts: Poppins for headings, Inter for body -->
+    <!-- Google Fonts: Inter for optimal UI readability -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind Configuration for Dark Mode & Custom Colors -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            }
+                        },
+                        'fadeInUp': {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        /* Base Settings */
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Modern Animated 4-Color Gradient */
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 2rem;
-            color: #333;
-        }
+        /* Base Settings & Smooth Scrolling */
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; }
 
-        h1, h2, h3, button {
-            font-family: 'Poppins', sans-serif;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 4px; 
         }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Glassmorphism Container */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
-            backdrop-filter: blur(12px); /* Blur effect */
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 1024px; /* Increased slightly for 3 columns */
-            margin-top: 2rem;
-            transition: transform 0.3s ease;
-        }
-
-        /* Avatar Styling */
-        .avatar-container img {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .avatar-container img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        /* Custom Scrollbar for Table Container */
-        .table-container::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
-        }
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1; 
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; 
-        }
-
-        /* Table Styling */
-        table {
-            border-collapse: separate;
-            border-spacing: 0;
-            width: 100%;
-        }
-        
-        th {
-            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%); /* Deep Blue Gradient header */
-            color: white;
-            font-weight: 600;
-            padding: 1rem;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        th:first-child { border-top-left-radius: 0.5rem; }
-        th:last-child { border-top-right-radius: 0.5rem; }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            background-color: rgba(255, 255, 255, 0.6);
-            transition: background-color 0.2s;
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:last-child td:first-child { border-bottom-left-radius: 0.5rem; }
-        tr:last-child td:last-child { border-bottom-right-radius: 0.5rem; }
-
-        tr:hover td {
-            background-color: rgba(235, 248, 255, 0.9); /* Light blue hover */
-        }
-
-        /* Input Styling */
-        .modern-input {
-            transition: all 0.3s ease;
-            background-color: rgba(255,255,255,0.8);
-        }
-        .modern-input:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
         /* Loading Spinner */
         .spinner {
@@ -148,81 +88,140 @@
         }
 
         /* Sort Arrows */
-        th.sort-asc::after { content: ' ▲'; opacity: 0.8; margin-left: 5px; }
-        th.sort-desc::after { content: ' ▼'; opacity: 0.8; margin-left: 5px; }
+        th.sort-asc::after { content: ' \2191'; font-size: 0.8em; margin-left: 4px; opacity: 0.7; }
+        th.sort-desc::after { content: ' \2193'; font-size: 0.8em; margin-left: 4px; opacity: 0.7; }
+        
+        /* Hide scrollbar for the main wrapper but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-rose-50 via-teal-50 to-violet-50 dark:from-slate-950 dark:via-indigo-950/50 dark:to-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-500 min-h-screen relative overflow-x-hidden flex flex-col items-center py-10 px-4 sm:px-6 animate-gradient-x bg-[length:200%_200%]">
 
-    <div class="glass-container">
-        <!-- Avatar -->
-        <div class="flex justify-center mb-6 avatar-container">
-            <img src="https://cdn.pixabay.com/photo/2017/08/17/13/33/logo-2651348_1280.jpg" alt="User Avatar"
-                 class="rounded-full border-4 border-white shadow-lg w-28 h-28 object-cover">
+    <!-- Ambient Background Effects -->
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-emerald-300/30 dark:bg-cyan-900/20 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-300/30 dark:bg-fuchsia-900/20 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-rose-300/30 dark:bg-violet-900/20 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="absolute top-6 right-6 z-50">
+        <button id="themeToggle" class="p-2.5 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Toggle Dark Mode">
+            <!-- Sun Icon -->
+            <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <!-- Moon Icon -->
+            <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Main Glass Container -->
+    <div class="w-full max-w-5xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/40 dark:border-slate-700/50 rounded-3xl shadow-2xl p-6 sm:p-10 transition-all duration-300 mt-4 animate-fade-in-up opacity-0" style="animation-fill-mode: forwards;">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col items-center mb-10">
+            <div class="relative group cursor-pointer mb-5">
+                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-cyan-500 dark:from-cyan-500 dark:to-fuchsia-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-500 animate-gradient-x bg-[length:200%_auto]"></div>
+                <img src="https://cdn.pixabay.com/photo/2019/09/22/16/20/megan_rexazin_conde-location-4496459_1280.png" alt="User Avatar" class="relative rounded-full border-2 border-white dark:border-slate-800 shadow-md w-24 h-24 object-cover transform transition duration-300 group-hover:scale-105">
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 via-cyan-600 to-emerald-600 dark:from-cyan-400 dark:via-fuchsia-400 dark:to-violet-400 mb-2 tracking-tight animate-gradient-x bg-[length:200%_auto]">Ward Finder</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Instantly locate townships, towns, and wards</p>
         </div>
-
-        <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-2 tracking-tight">Ward Finder</h1>
-        <p class="text-center text-gray-500 mb-8 text-sm">Find townships and wards instantly</p>
 
         <!-- Search Form -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="group">
-                <label for="townshipInput" class="block text-gray-700 text-sm font-bold mb-2 ml-1">
-                    Township Name
-                </label>
-                <input type="text" id="townshipInput" placeholder="e.g., Ahlone"
-                       class="modern-input appearance-none border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <!-- Township Input -->
+            <div class="relative">
+                <label for="townshipInput" class="block text-slate-700 dark:text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Township</label>
+                <div class="relative flex items-center">
+                    <svg class="absolute left-4 w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <input type="text" id="townshipInput" placeholder="e.g., Ahlone" class="w-full bg-white/50 dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700 rounded-xl py-3 pl-11 pr-4 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                </div>
             </div>
 
-            <div class="group">
-                <label for="townInput" class="block text-gray-700 text-sm font-bold mb-2 ml-1">
-                    Town Name
-                </label>
-                <input type="text" id="townInput" placeholder="e.g., Yangon"
-                       class="modern-input appearance-none border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+            <!-- Town Input -->
+            <div class="relative">
+                <label for="townInput" class="block text-slate-700 dark:text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Town</label>
+                <div class="relative flex items-center">
+                    <svg class="absolute left-4 w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <input type="text" id="townInput" placeholder="e.g., Yangon" class="w-full bg-white/50 dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700 rounded-xl py-3 pl-11 pr-4 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                </div>
             </div>
 
-            <div class="group">
-                <label for="burmeseInput" class="block text-gray-700 text-sm font-bold mb-2 ml-1">
-                    Ward Name (Burmese)
-                </label>
-                <input type="text" id="burmeseInput" placeholder="e.g., ဗဟန်း"
-                       class="modern-input appearance-none border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200">
+            <!-- Burmese Ward Input -->
+            <div class="relative">
+                <label for="burmeseInput" class="block text-slate-700 dark:text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Ward Name (MM)</label>
+                <div class="relative flex items-center">
+                    <svg class="absolute left-4 w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                    <input type="text" id="burmeseInput" placeholder="e.g., ဗဟန်း" class="w-full bg-white/50 dark:bg-slate-950/50 border border-slate-300 dark:border-slate-700 rounded-xl py-3 pl-11 pr-4 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                </div>
             </div>
         </div>
 
-        <!-- Buttons -->
+        <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 mb-8">
-            <button id="searchButton"
-                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transform transition hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-300 w-full sm:w-auto flex-grow flex justify-center items-center">
-                Search
-                <span id="loadingSpinner" class="spinner hidden"></span>
+            <button id="searchButton" class="group relative flex-1 bg-gradient-to-r from-teal-500 via-cyan-500 to-emerald-500 dark:from-cyan-600 dark:via-fuchsia-600 dark:to-violet-600 hover:bg-right text-white font-semibold py-3 px-8 rounded-xl shadow-md hover:shadow-lg transform transition-all duration-500 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 dark:focus:ring-offset-slate-900 flex justify-center items-center overflow-hidden bg-[length:200%_auto]">
+                <span class="relative z-10 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    Search
+                    <span id="loadingSpinner" class="spinner hidden ml-2 border-2 border-white/30 border-l-white"></span>
+                </span>
             </button>
-            <button id="clearButton"
-                    class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-xl border border-gray-300 shadow-md transform transition hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-gray-200 w-full sm:w-auto flex-grow">
-                Clear
+            <button id="clearButton" class="flex-none bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold py-3 px-8 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow transform transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 dark:focus:ring-offset-slate-900 flex justify-center items-center">
+                <svg class="w-5 h-5 mr-2 text-rose-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Clear Filters
             </button>
         </div>
 
         <!-- Message Box -->
-        <div id="messageBox" class="hidden rounded-xl p-4 mb-6 text-center text-sm font-medium transition-all duration-300"></div>
+        <div id="messageBox" class="hidden rounded-xl p-4 mb-6 text-center text-sm font-medium border transition-all duration-300 flex items-center justify-center gap-2"></div>
 
-        <!-- Results -->
-        <div id="results" class="table-container rounded-lg shadow-inner bg-white/40 overflow-x-auto min-h-[50px]">
-            <!-- Results table injected here -->
+        <!-- Results Table Container -->
+        <div id="resultsContainer" class="rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden bg-white/60 dark:bg-slate-900/60 shadow-inner min-h-[100px] relative transition-colors duration-300">
+            <div class="overflow-x-auto w-full">
+                <!-- Results table injected here via JS -->
+                <div id="results" class="min-w-full inline-block align-middle">
+                    <div class="p-12 text-center flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                        <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <p class="text-base">Enter search criteria to find wards.</p>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="mt-6 text-center text-xs text-gray-400">
-            Created by ACA@2025 All Rights Reserved
+        <!-- Footer -->
+        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500">
+            &copy; 2025 ACA. All Rights Reserved.
         </div>
     </div>
 
     <script>
-        // --- Logic remains largely the same, optimized for new UI classes ---
+        // --- Dark Mode Logic ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
         
+        // Check for saved user preference, if any, on load of the website
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            // toggle icons inside button is handled by CSS (hidden dark:block etc)
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        });
+
+        // --- App Logic ---
         const townshipInput = document.getElementById('townshipInput');
         const townInput = document.getElementById('townInput');
-        const burmeseInput = document.getElementById('burmeseInput'); // New Input
+        const burmeseInput = document.getElementById('burmeseInput');
         const searchButton = document.getElementById('searchButton');
         const clearButton = document.getElementById('clearButton');
         const resultsDiv = document.getElementById('results');
@@ -236,20 +235,24 @@
         let sortDirection = 'asc';
 
         function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.className = 'hidden rounded-xl p-4 mb-6 text-center text-sm font-medium transition-all duration-300'; // Reset
-            
-            messageBox.classList.remove('hidden');
-            
+            // Define icon based on type
+            let iconSvg = '';
             if (type === 'error') {
-                messageBox.classList.add('bg-red-100', 'text-red-700', 'border', 'border-red-200');
+                iconSvg = `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
+                messageBox.className = 'rounded-xl p-4 mb-6 text-sm font-medium border transition-all duration-300 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/50';
             } else if (type === 'success') {
-                messageBox.classList.add('bg-green-100', 'text-green-700', 'border', 'border-green-200');
+                iconSvg = `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                messageBox.className = 'rounded-xl p-4 mb-6 text-sm font-medium border transition-all duration-300 flex items-center justify-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800/50';
             } else if (type === 'warning') {
-                messageBox.classList.add('bg-yellow-100', 'text-yellow-700', 'border', 'border-yellow-200');
+                iconSvg = `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
+                messageBox.className = 'rounded-xl p-4 mb-6 text-sm font-medium border transition-all duration-300 flex items-center justify-center gap-2 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800/50';
             } else {
-                messageBox.classList.add('bg-blue-50', 'text-blue-700', 'border', 'border-blue-100');
+                iconSvg = `<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>`;
+                messageBox.className = 'rounded-xl p-4 mb-6 text-sm font-medium border transition-all duration-300 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50';
             }
+            
+            messageBox.innerHTML = `${iconSvg} <span>${message}</span>`;
+            messageBox.classList.remove('hidden');
         }
 
         function hideMessageBox() {
@@ -258,14 +261,14 @@
 
         function showLoadingSpinner() {
             loadingSpinner.classList.remove('hidden');
-            searchButton.classList.add('opacity-75', 'cursor-not-allowed');
+            searchButton.classList.add('opacity-80', 'cursor-not-allowed');
             searchButton.disabled = true;
             clearButton.disabled = true;
         }
 
         function hideLoadingSpinner() {
             loadingSpinner.classList.add('hidden');
-            searchButton.classList.remove('opacity-75', 'cursor-not-allowed');
+            searchButton.classList.remove('opacity-80', 'cursor-not-allowed');
             searchButton.disabled = false;
             clearButton.disabled = false;
         }
@@ -293,6 +296,7 @@
             const headers = lines[0].split(',').map(h => h.trim());
             const data = [];
             for (let i = 1; i < lines.length; i++) {
+                // Better CSV parsing to handle commas inside quotes could be added here if needed
                 const values = lines[i].split(',');
                 if (values.length === headers.length) {
                     const row = {};
@@ -334,27 +338,37 @@
 
             if (dataToDisplay.length === 0) {
                 resultsDiv.innerHTML = `
-                    <div class="p-8 text-center flex flex-col items-center justify-center text-gray-500">
-                        <svg class="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p>No results found.</p>
+                    <div class="p-12 text-center flex flex-col items-center justify-center text-slate-500 dark:text-slate-400">
+                        <svg class="w-12 h-12 mb-3 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p>No matches found. Try adjusting your search.</p>
                     </div>`;
                 return;
             }
 
             const table = document.createElement('table');
+            table.className = "min-w-full divide-y divide-slate-200 dark:divide-slate-700/50";
+            
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
             
-            // Derive headers
             const headers = Object.keys(dataToDisplay[0]);
 
-            headers.forEach(key => {
+            headers.forEach((key, index) => {
                 const th = document.createElement('th');
                 th.textContent = key;
                 th.dataset.columnKey = key;
+                // Modern Table Header styling
+                th.className = "px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider sticky top-0 bg-slate-100/95 dark:bg-slate-800/95 backdrop-blur z-10 cursor-pointer select-none transition-colors hover:bg-slate-200/95 dark:hover:bg-slate-700/95";
+                
+                // Add borders carefully to not double up
+                if (index !== headers.length -1) {
+                     th.classList.add("border-r", "border-slate-200/50", "dark:border-slate-700/30");
+                }
+
                 th.addEventListener('click', handleHeaderClick);
                 if (currentSortColumn === key) {
                     th.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                    th.classList.add('text-cyan-600', 'dark:text-cyan-400');
                 }
                 headerRow.appendChild(th);
             });
@@ -362,12 +376,20 @@
             table.appendChild(thead);
 
             const tbody = document.createElement('tbody');
-            dataToDisplay.forEach(rowData => {
+            tbody.className = "divide-y divide-slate-100 dark:divide-slate-700/50 bg-white/40 dark:bg-slate-900/40";
+            
+            dataToDisplay.forEach((rowData, rowIndex) => {
                 const tr = document.createElement('tr');
-                headers.forEach(header => {
+                tr.className = "group transition-colors duration-200 hover:bg-cyan-50/60 dark:hover:bg-fuchsia-900/20";
+                
+                headers.forEach((header, index) => {
                     const td = document.createElement('td');
-                    td.textContent = rowData[header] || '';
-                    td.className = "text-sm text-gray-700 whitespace-nowrap";
+                    td.textContent = rowData[header] || '-';
+                    td.className = "px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300 transition-colors";
+                    
+                    if (index !== headers.length -1) {
+                         td.classList.add("border-r", "border-slate-100", "dark:border-slate-800/50");
+                    }
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);
@@ -379,10 +401,10 @@
         async function handleSearch() {
             const townshipName = townshipInput.value.trim().toLowerCase();
             const townName = townInput.value.trim().toLowerCase();
-            const burmeseQuery = burmeseInput.value.trim().toLowerCase(); // Normalize case for robustness
+            const burmeseQuery = burmeseInput.value.trim().toLowerCase();
 
             if (!townshipName && !townName && !burmeseQuery) {
-                showMessage('Please enter a location to search.', 'warning');
+                showMessage('Please enter at least one search criteria.', 'warning');
                 return;
             }
 
@@ -396,7 +418,7 @@
                 const matchesTownship = townshipName ? (row['Township'] && row['Township'].toLowerCase().includes(townshipName)) : true;
                 const matchesTown = townName ? (row['Town'] && row['Town'].toLowerCase().includes(townName)) : true;
                 
-                // Matches if ANY column contains the burmese query string
+                // Flexible Burmese match across all fields
                 const matchesBurmese = burmeseQuery 
                     ? Object.values(row).some(val => val && val.toLowerCase().includes(burmeseQuery))
                     : true;
@@ -409,34 +431,47 @@
             }
 
             displayDataInTable(filteredData);
+            
+            // Show result count
+            if (filteredData.length > 0) {
+                showMessage(`Found ${filteredData.length} matching records.`, 'success');
+            }
         }
 
         function clearAll() {
             townshipInput.value = '';
             townInput.value = '';
-            burmeseInput.value = ''; // Clear Burmese input
-            resultsDiv.innerHTML = '';
+            burmeseInput.value = '';
+            
+            // Reset to empty state UI
+            resultsDiv.innerHTML = `
+                <div class="p-12 text-center flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                    <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <p class="text-base">Enter search criteria to find wards.</p>
+                </div>`;
+                
             hideMessageBox();
             currentSortColumn = null;
             sortDirection = 'asc';
-            showMessage('Ready to search. Enter a Township, Town, or Burmese name.', 'info');
         }
 
         searchButton.addEventListener('click', handleSearch);
         clearButton.addEventListener('click', clearAll);
         
-        // Enter key support
+        // Enter key support for all inputs
         [townshipInput, townInput, burmeseInput].forEach(input => {
             input.addEventListener('keypress', (e) => {
                 if(e.key === 'Enter') handleSearch();
             });
         });
 
-        // Init
+        // Initialize Data on Load
         document.addEventListener('DOMContentLoaded', async () => {
+            // We can pre-fetch data in the background without blocking the UI
             allData = await fetchCsvData();
             if (allData.length > 0) {
-                showMessage('Database loaded. Enter a location to begin.', 'success');
+                // Silently loaded, ready for instant search
+                console.log("Database pre-loaded successfully.");
             }
         });
     </script>
